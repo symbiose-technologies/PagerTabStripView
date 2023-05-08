@@ -81,9 +81,13 @@ private struct WrapperPagerTabStripView<SelectionType, Content>: View where Sele
     @Binding private var edgeSwipeGestureDisabled: HorizontalContainerEdge
     @State private var swipeOn: Bool = true
 
+    @Environment(\.pagerBarPlacement) var pagerBarPlacement: PagerBarPlacementType
+
+    
     public init(swipeGestureEnabled: Binding<Bool>,
                 edgeSwipeGestureDisabled: Binding<HorizontalContainerEdge>,
-                selection: Binding<SelectionType>, @ViewBuilder content: @escaping () -> Content) {
+                selection: Binding<SelectionType>,
+                @ViewBuilder content: @escaping () -> Content) {
         self._swipeGestureEnabled = swipeGestureEnabled
         self._edgeSwipeGestureDisabled = edgeSwipeGestureDisabled
         self._selection = selection
@@ -91,8 +95,23 @@ private struct WrapperPagerTabStripView<SelectionType, Content>: View where Sele
     }
 
     @MainActor public var body: some View {
+        if pagerBarPlacement == .hidden {
+            mainContainer
+                .environmentObject(pagerSettings)
+                .clipped()
+        } else {
+            mainContainer
+                .modifier(NavBarModifier(selection: $selection))
+                .environmentObject(pagerSettings)
+                .clipped()
+        }
+    }
+    
+    
+    @MainActor public var mainContainer: some View {
         GeometryReader { geometryProxy in
-            LazyHStack(spacing: 0) {
+            HStack(spacing: 0) {
+//                LazyHStack(spacing: 0) {
                 content
                     .frame(width: geometryProxy.size.width)
             }
@@ -156,9 +175,7 @@ private struct WrapperPagerTabStripView<SelectionType, Content>: View where Sele
                 swipeOn = true
             }
         }
-        .modifier(NavBarModifier(selection: $selection))
-        .environmentObject(pagerSettings)
-        .clipped()
+        
     }
 
 }

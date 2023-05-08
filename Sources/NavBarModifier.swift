@@ -10,6 +10,7 @@ import SwiftUI
 struct NavBarModifier<SelectionType>: ViewModifier where SelectionType: Hashable {
     @Binding private var selection: SelectionType
 
+    
     public init(selection: Binding<SelectionType>) {
         self._selection = selection
     }
@@ -17,8 +18,13 @@ struct NavBarModifier<SelectionType>: ViewModifier where SelectionType: Hashable
     @MainActor func body(content: Content) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             if !style.placedInToolbar {
-                NavBarWrapperView(selection: $selection)
+                if pagerBarPlacement == .top {
+                    NavBarWrapperView(selection: $selection)
+                }
                 content
+                if pagerBarPlacement == .bottom {
+                    NavBarWrapperView(selection: $selection)
+                }
             } else {
                 content.toolbar(content: {
                     ToolbarItem(placement: .principal) {
@@ -30,6 +36,7 @@ struct NavBarModifier<SelectionType>: ViewModifier where SelectionType: Hashable
     }
 
     @Environment(\.pagerStyle) var style: PagerStyle
+    @Environment(\.pagerBarPlacement) var pagerBarPlacement: PagerBarPlacementType
 }
 
 private struct NavBarWrapperView<SelectionType>: View where SelectionType: Hashable {

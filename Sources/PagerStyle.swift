@@ -191,3 +191,23 @@ extension EnvironmentValues {
         set { self[PagerStyleKey.self] = newValue }
     }
 }
+
+
+
+public enum PagerBarPlacementType: Equatable, Hashable {
+    case top
+    case bottom
+    case hidden
+}
+
+private struct PagerBarPlacementKey: EnvironmentKey {
+    static let defaultValue: PagerBarPlacementType = .top
+}
+
+extension EnvironmentValues {
+    var pagerBarPlacement: PagerBarPlacementType {
+        get { self[PagerBarPlacementKey.self] }
+        set { self[PagerBarPlacementKey.self] = newValue }
+    }
+}
+
