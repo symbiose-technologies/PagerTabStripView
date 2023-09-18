@@ -101,7 +101,7 @@ private struct WrapperPagerTabStripView<SelectionType, Content>: View where Sele
                 .clipped()
         } else {
             mainContainer
-                .modifier(NavBarModifier(selection: $selection))
+                .modifier(PagerNavBarModifier(selection: $selection))
                 .environmentObject(pagerSettings)
                 .clipped()
         }

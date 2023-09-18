@@ -7,7 +7,16 @@
 
 import SwiftUI
 
-struct NavBarModifier<SelectionType>: ViewModifier where SelectionType: Hashable {
+public extension View {
+    func withPagerNavBar<T: Hashable, P: PagerStyle>(_ selection: Binding<T>,
+                                                     style: P) -> some View {
+        self
+            .modifier(PagerNavBarModifier(selection: selection))
+            .pagerTabStripViewStyle(style)
+    }
+}
+
+public struct PagerNavBarModifier<SelectionType>: ViewModifier where SelectionType: Hashable {
     @Binding private var selection: SelectionType
 
     
@@ -15,20 +24,21 @@ struct NavBarModifier<SelectionType>: ViewModifier where SelectionType: Hashable
         self._selection = selection
     }
 
-    @MainActor func body(content: Content) -> some View {
+    @MainActor
+    public func body(content: Content) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             if !style.placedInToolbar {
                 if pagerBarPlacement == .top {
-                    NavBarWrapperView(selection: $selection)
+                    PagerNavBarWrapperView(selection: $selection)
                 }
                 content
                 if pagerBarPlacement == .bottom {
-                    NavBarWrapperView(selection: $selection)
+                    PagerNavBarWrapperView(selection: $selection)
                 }
             } else {
                 content.toolbar(content: {
                     ToolbarItem(placement: .principal) {
-                        NavBarWrapperView(selection: $selection)
+                        PagerNavBarWrapperView(selection: $selection)
                     }
                 })
             }
@@ -39,10 +49,16 @@ struct NavBarModifier<SelectionType>: ViewModifier where SelectionType: Hashable
     @Environment(\.pagerBarPlacement) var pagerBarPlacement: PagerBarPlacementType
 }
 
-private struct NavBarWrapperView<SelectionType>: View where SelectionType: Hashable {
+public struct PagerNavBarWrapperView<SelectionType>: View where SelectionType: Hashable {
     @Binding var selection: SelectionType
 
-    @MainActor var body: some View {
+    public init(selection: Binding<SelectionType>) {
+        self._selection = selection
+    }
+
+    
+    @MainActor
+    public var body: some View {
         switch style {
         case let barStyle as BarStyle:
             IndicatorBarView<SelectionType, AnyView>(selection: $selection, indicator: barStyle.indicatorView)
