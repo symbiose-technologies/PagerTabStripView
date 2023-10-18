@@ -110,8 +110,8 @@ private struct WrapperPagerTabStripView<SelectionType, Content>: View where Sele
     
     @MainActor public var mainContainer: some View {
         GeometryReader { geometryProxy in
-            HStack(spacing: 0) {
-//                LazyHStack(spacing: 0) {
+//            HStack(spacing: 0) {
+                LazyHStack(spacing: 0) {
                 content
                     .frame(width: geometryProxy.size.width)
             }
